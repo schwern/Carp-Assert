@@ -1,78 +1,61 @@
-=head1 SYNOPSIS
+NAME
+    Carp::Assert - executable comments
 
-    # Assertations are on.
-    use Carp::Assert;
-    assert(1 == 1) if DEBUG;
-    
-    # Assertations are off.
-    use Carp::Assert qw(:NDEBUG);
-    assert(1 == 1) if DEBUG;
+SYNOPSIS
+        # Assertions are on.
+        use Carp::Assert;
 
+        $next_sunrise_time = sunrise();
 
-=head1 DESCRIPTION
+        # Assert that the sun must rise in the next 24 hours.
+        assert(($next_sunrise_time - time) < 24*60*60) if DEBUG;
 
-    "We are ready for any unforseen event that may or may not 
-    occur."
-        - Dan Quayle
+        # Assertions are off.
+        no Carp::Assert;
 
-Carp::Assert is intended for a purpose like the ANSI C library assert.h.
-If you're already familiar with assert.h, then you can probably skip this and
-go straight to the FUNCTIONS section.
+        $next_pres = divine_next_president();
 
-Assertations are the explict expressions of your assumptions about the reality
-your program is expected to deal with, and a declaration of those which it is
-not.  They are used to prevent your program from blissfully processing garbage
-inputs (garbage in, garbage out becomes garbage in, error out) and to tell you
-when you've produced garbage output.  (If I was going to be a cynic about Perl
-and the user nature, I'd say there are no user inputs but garbage, and Perl
-produces nothing but...)
+        # Assert that if you predict Dan Quayle will be the next president
+        # your crystal ball might need some polishing.  However, since
+        # assertions are off, IT COULD HAPPEN!
+        shouldnt($next_pres, 'Dan Quayle') if DEBUG;
 
-An assertation is used to prevent the impossible from being asked of your
-code, or at least tell you when it does.  For example:
-    
-    # Take the square root of a number.
-    sub my_sqrt {
-        my($num) = shift;
+DESCRIPTION
+        "We are ready for any unforseen event that may or may not 
+        occur."
+            - Dan Quayle
 
-        # the square root of a negative number is imaginary.
-        assert($num >= 0);
+    Carp::Assert is intended for a purpose like the ANSI C library assert.h.
+    If you're already familiar with assert.h, then you can probably skip
+    this and go straight to the FUNCTIONS section.
 
-        return sqrt $num;
-    }
+    Assertions are the explict expressions of your assumptions about the
+    reality your program is expected to deal with, and a declaration of
+    those which it is not. They are used to prevent your program from
+    blissfully processing garbage inputs (garbage in, garbage out becomes
+    garbage in, error out) and to tell you when you've produced garbage
+    output. (If I was going to be a cynic about Perl and the user nature,
+    I'd say there are no user inputs but garbage, and Perl produces nothing
+    but...)
 
-The assertation will warn you if a negative number was handed to your
-subroutine, a reality the routine has no intention of dealing with.
+    An assertion is used to prevent the impossible from being asked of your
+    code, or at least tell you when it does. For example:
 
-An assertation should also be used a something of a reality check, to make
-sure what your code just did really did happen:
+        # Take the square root of a number.
+        sub my_sqrt {
+            my($num) = shift;
 
-    open(FILE, $filename) || die $!;
-    @stuff = <FILE>;
-    @stuff = do_something(@stuff);
-    
-    # I should have some stuff.
-    assert(scalar(@stuff) > 0);
-    
-The assertation makes sure you have some @stuff at the end.  Maybe the file
-was empty, maybe do_something() returned an empty list... either way, the
-assert() will give you a clue as to where the problem lies, rather than 50
-lines down when you print out @stuff and discover it to be empty.
+            # the square root of a negative number is imaginary.
+            assert($num >= 0);
 
-Since assertations are designed for debugging and will remove themelves from
-production code, your assertations should be carefully crafted so as to not
-have any side-effects, change any variables or otherwise have any effect on
-your program.  Here is an example of a bad assertation:
+            return sqrt $num;
+        }
 
-    assert($error = 1 if $king ne 'Henry');  # bad!
+    The assertion will warn you if a negative number was handed to your
+    subroutine, a reality the routine has no intention of dealing with.
 
-It sets an error flag which may then be used somewhere else in your program. 
-When you shut off your assertations with the $DEBUG flag, $error will no
-longer be set.
-
-
-=head1 AUTHOR
-
-Michael G Schwern <schwern@pobox.com>
+AUTHOR
+        Michael G Schwern <schwern@pobox.com>
 
 WHAT IS THIS?
 
@@ -85,7 +68,6 @@ To install this module, cd to the directory that contains this README
 file and type the following:
 
    perl Makefile.PL
-   make
    make test
    make install
 
