@@ -1,6 +1,6 @@
 =head1 SYNOPSIS
 
-	# Assertations are on.
+    # Assertations are on.
     use Carp::Assert;
     assert(1 == 1) if DEBUG;
     
@@ -97,4 +97,4 @@ Please also read the perlmodinstall man page, if available.
 
 WHAT MODULES DO I NEED?
 
-	Carp
+    Carp

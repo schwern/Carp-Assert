@@ -88,7 +88,7 @@ $error will no longer be set.
 
 Here's another bad example:
 
-    assert($next_pres ne 'Dan Quayle' or goto Canada);	# Bad!
+    assert($next_pres ne 'Dan Quayle' or goto Canada);  # Bad!
 
 This assertion has the side effect of moving to Canada should it fail.
 This is a very bad assertion since error handling should not be
@@ -196,23 +196,23 @@ BEGIN {
 
     @EXPORT = qw(assert DEBUG);
     %EXPORT_TAGS = (
-		    NDEBUG => [qw(assert DEBUG)],
-		    DEBUG  => [qw(assert DEBUG)],
-               	   );
+            NDEBUG => [qw(assert DEBUG)],
+            DEBUG  => [qw(assert DEBUG)],
+                   );
     Exporter::export_tags(qw(NDEBUG DEBUG));
 }
 
 use subs qw(DEBUG);
 use constant REAL_DEBUG => 1;
-use constant NDEBUG 	=> 0;
+use constant NDEBUG     => 0;
 
 # Export the proper DEBUG flag according to if :NDEBUG is set.
 sub import {
     if( grep /^:NDEBUG/, @_ ) { 
-	*DEBUG = *NDEBUG;
+    *DEBUG = *NDEBUG;
     }
     else {
-	*DEBUG = *REAL_DEBUG;
+    *DEBUG = *REAL_DEBUG;
     }
     Carp::Assert->export_to_level(1, @_);
 }
@@ -220,8 +220,8 @@ sub import {
 
 sub assert ($) { 
     unless($_[0]) {
-	require Carp;
-	&Carp::confess("Assert failed\n");
+    require Carp;
+    &Carp::confess("Assert failed\n");
     }
     return undef; 
 }
