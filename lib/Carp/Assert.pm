@@ -8,7 +8,7 @@ use Exporter;
 use vars qw(@ISA $VERSION %EXPORT_TAGS);
 
 BEGIN {
-    $VERSION = '0.12';
+    $VERSION = '0.13';
 
     @ISA = qw(Exporter);
 
@@ -72,6 +72,19 @@ sub shouldnt ($$) {
     }
     return undef;
 }
+
+# Sorry, I couldn't resist.
+sub shouldn't ($$) {     # emacs cperl-mode madness #' sub {
+    my $env_ndebug = exists $ENV{PERL_NDEBUG} ? $ENV{PERL_NDEBUG}
+                                              : $ENV{NDEBUG};
+    if( $env_ndebug ) {
+        return undef;
+    }
+    else {
+        shouldnt($_[0], $_[1]);
+    }
+}
+
 
 return q|You don't just EAT the largest turnip in the world!|;
 #'#
@@ -314,12 +327,15 @@ working on at the same time.
 
 =head1 BUGS, CAVETS and other MUSINGS
 
-Someday, Perl will have an inline pragma, and the "if DEBUG"
+Someday, Perl will have an inline pragma, and the C<if DEBUG>
 bletcherousness will go away.
 
 I really need to figure a way to get it to return the given statement
 in the assertion.  should() and shouldnt() is a start.  Maybe
 B::Deparse... would assert({$this eq $that}) be too annoying?
+
+Yes, there is a C<shouldn't> routine.  It mostly works, but you B<must>
+put the C<if DEBUG> after it.
 
 
 =head1 AUTHOR

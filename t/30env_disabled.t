@@ -6,7 +6,7 @@ use strict;
 # Test with assert on.
 
 $| = 1;
-print "1..4\n";
+print "1..5\n";
 my $t_num = 1;
 
 local $@;
@@ -34,3 +34,7 @@ eval { shouldnt('this', 'this') };
 print "not " if $@ ne '';
 print "ok ".$t_num++."\n";
 
+$@ = '';
+eval { shouldn't('this', 'this') };
+print "not " if $@ ne '';
+print "ok ".$t_num++."\n";

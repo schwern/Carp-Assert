@@ -1,4 +1,7 @@
 Revision history for Perl extension Carp::Assert.
+0.13  Fri Feb  9 15:28:23 GMT 2001
+    - Added shouldn't().
+
 0.12  Tue Feb  6 11:58:11 GMT 2001
     - Added PERL_NDEBUG environment variable, same as NDEBUG
     * added should() and shouldnt()
