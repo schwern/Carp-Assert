@@ -1,5 +1,7 @@
 Revision history for Perl extension Carp::Assert.
-
+0.08  Thu Dec 23 13:04:55 EST 1999
+	- Made the assert error a smidge nicer looking.
+	- Added some docs on what an assert error means.
 0.07  Wed Oct 13 12:08:43 EDT 1999
 	- s/assertation/assertion/g  (Thanks to John Porter)
 	- improved the synopsis a smidge
