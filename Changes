@@ -4,6 +4,7 @@ Revision history for Perl extension Carp::Assert.
     - Added copyright and license info
     - Made affirm's code dumping code safe on perl where B::Deparse
       isn't quite up to the job.
+    - Some minor grammar nits from David Wheeler.
 
 0.17  Mon Oct  1 16:43:00 EDT 2001
     * Wouldn't install without Test::Inline.  Removed that dependency.

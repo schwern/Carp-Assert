@@ -156,7 +156,7 @@ ok( !eval{ my_sqrt(-1); 1 },   '  and pukes on bad' );
 The assertion will warn you if a negative number was handed to your
 subroutine, a reality the routine has no intention of dealing with.
 
-An assertion should also be used a something of a reality check, to
+An assertion should also be used as something of a reality check, to
 make sure what your code just did really did happen:
 
     open(FILE, $filename) || die $!;
@@ -174,7 +174,7 @@ printing anything.
 
 Since assertions are designed for debugging and will remove themelves
 from production code, your assertions should be carefully crafted so
-as to not have any side-effects, change any variables or otherwise
+as to not have any side-effects, change any variables, or otherwise
 have any effect on your program.  Here is an example of a bad
 assertation:
 
@@ -393,6 +393,7 @@ sub shouldn't ($$) {     # emacs cperl-mode madness #' sub {
     }
 }
 
+=back
 
 =head1 Debugging vs Production
 
@@ -437,7 +438,7 @@ evaluated.
 =head1 Differences from ANSI C
 
 assert() is intended to act like the function from ANSI C fame. 
-Unfortunately, due to perl's lack of macros or strong inlining, it's not
+Unfortunately, due to Perl's lack of macros or strong inlining, it's not
 nearly as unobtrusive.
 
 Well, the obvious one is the "if DEBUG" part.  This is cleanest way I could
