@@ -8,7 +8,7 @@ use Exporter;
 use vars qw(@ISA @EXPORT $VERSION %EXPORT_TAGS);
 
 BEGIN {
-    $VERSION = '0.10';
+    $VERSION = '0.11';
     
     @ISA = qw(Exporter);
 
@@ -26,7 +26,7 @@ sub NDEBUG      ()  { 0 }       # CONSTANT
 
 # Export the proper DEBUG flag according to if :NDEBUG is set.
 sub import {
-    if( grep /^:NDEBUG/, @_ ) { 
+    if( grep(/^:NDEBUG$/, @_) or exists $ENV{NDEBUG} ) { 
         *DEBUG = *NDEBUG;
     }
     else {
@@ -199,6 +199,9 @@ your program entirely, since the if conditional will always be false.
 
 (This is the best I can do without requiring Filter::cpp)
 
+Another way to switch off all asserts, system wide, is to define the
+NDEBUG environment variable.
+
 You can safely leave out the "if DEBUG" part, but then your assert() function
 will always execute.  Oh well.
 
@@ -218,6 +221,19 @@ just the line number and call frame via Carp::confess.  This was an
 interface issue, since "assert('1 == 1') if DEBUG;  looked really ugly.
 And with Perl, unlike C, you always have the source to look through, so the
 need isn't as great.
+
+
+=head1 ENVIRONMENT
+
+=over 4
+
+=item NDEBUG
+
+Defining NDEBUG switches off all assertions.  It has the same effect
+as changing "use Carp::Assert" to "no Carp::Assert" but it effects all
+code.
+
+=back
 
 
 =head1 BUGS, CAVETS and other MUSINGS
