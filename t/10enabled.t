@@ -14,7 +14,7 @@ $@ = '';
 
 use Carp::Assert;
 eval { assert(1==0) if DEBUG; };
-print "not " if($@ eq '' || $@ !~ /^Assert failed/i);
+print "not " if($@ eq '' || $@ !~ /^Assertion failed/i);
 print "ok ".$t_num++."\n";
 
 $@ = '';
@@ -31,7 +31,7 @@ print "not " if $@ ne '';
 print "ok ".$t_num++."\n";
 
 eval { should('this', 'that') };
-print "not " if $@ !~ /^Assert failed/i;
+print "not " if $@ !~ /^Assertion \(.*\) failed/i;
 print "ok ".$t_num++."\n";
 
 eval { shouldnt('this', 'that') };
@@ -39,9 +39,9 @@ print "not " if $@ ne '';
 print "ok ".$t_num++."\n";
 
 eval { shouldnt('up', 'up') };
-print "not " if $@ !~ /^Assert failed/i;
+print "not " if $@ !~ /^Assertion \(.*\) failed/i;
 print "ok ".$t_num++."\n";
 
 eval { shouldn't('up', 'up') };
-print "not " if $@ !~ /^Assert failed/i;
+print "not " if $@ !~ /^Assertion \(.*\) failed/i;
 print "ok ".$t_num++."\n";

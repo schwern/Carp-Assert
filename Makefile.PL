@@ -1,12 +1,11 @@
 use ExtUtils::MakeMaker;
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
+
+warn "Carp::Assert likes to have B::Deparse but can't find it.\n" unless 
+  eval { require B::Deparse };
+
 WriteMakefile(
     'NAME'  => 'Carp::Assert',
     'VERSION_FROM' => 'lib/Carp/Assert.pm', # finds $VERSION
-#    'LIBS' => [''],   # e.g., '-lm' 
-#    'DEFINE'   => '',     # e.g., '-DHAVE_SOMETHING' 
-#    'INC'  => '',     # e.g., '-I/usr/include/other' 
      'PREREQ_PM' => { Carp => 0 },
      'dist'      => {COMPRESS => 'gzip -9',
                      SUFFIX   => '.gz',
