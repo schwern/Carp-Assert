@@ -19,6 +19,10 @@ WriteMakefile(
     package MY;
     sub top_targets {
         my($self) = @_;
+
+        return $self->SUPER::top_targets(@_) unless
+          eval { require Test::Inline; 1 };
+
         my $out = "POD2TEST_EXE = pod2test\n";
 
         $out .= $self->SUPER::top_targets(@_);
