@@ -1,0 +1,100 @@
+=head1 SYNOPSIS
+
+	# Assertations are on.
+    use Carp::Assert;
+    assert(1 == 1) if DEBUG;
+    
+    # Assertations are off.
+    use Carp::Assert qw(:NDEBUG);
+    assert(1 == 1) if DEBUG;
+
+
+=head1 DESCRIPTION
+
+    "We are ready for any unforseen event that may or may not 
+    occur."
+        - Dan Quayle
+
+Carp::Assert is intended for a purpose like the ANSI C library assert.h.
+If you're already familiar with assert.h, then you can probably skip this and
+go straight to the FUNCTIONS section.
+
+Assertations are the explict expressions of your assumptions about the reality
+your program is expected to deal with, and a declaration of those which it is
+not.  They are used to prevent your program from blissfully processing garbage
+inputs (garbage in, garbage out becomes garbage in, error out) and to tell you
+when you've produced garbage output.  (If I was going to be a cynic about Perl
+and the user nature, I'd say there are no user inputs but garbage, and Perl
+produces nothing but...)
+
+An assertation is used to prevent the impossible from being asked of your
+code, or at least tell you when it does.  For example:
+    
+    # Take the square root of a number.
+    sub my_sqrt {
+        my($num) = shift;
+
+        # the square root of a negative number is imaginary.
+        assert($num >= 0);
+
+        return sqrt $num;
+    }
+
+The assertation will warn you if a negative number was handed to your
+subroutine, a reality the routine has no intention of dealing with.
+
+An assertation should also be used a something of a reality check, to make
+sure what your code just did really did happen:
+
+    open(FILE, $filename) || die $!;
+    @stuff = <FILE>;
+    @stuff = do_something(@stuff);
+    
+    # I should have some stuff.
+    assert(scalar(@stuff) > 0);
+    
+The assertation makes sure you have some @stuff at the end.  Maybe the file
+was empty, maybe do_something() returned an empty list... either way, the
+assert() will give you a clue as to where the problem lies, rather than 50
+lines down when you print out @stuff and discover it to be empty.
+
+Since assertations are designed for debugging and will remove themelves from
+production code, your assertations should be carefully crafted so as to not
+have any side-effects, change any variables or otherwise have any effect on
+your program.  Here is an example of a bad assertation:
+
+    assert($error = 1 if $king ne 'Henry');  # bad!
+
+It sets an error flag which may then be used somewhere else in your program. 
+When you shut off your assertations with the $DEBUG flag, $error will no
+longer be set.
+
+
+=head1 AUTHOR
+
+Michael G Schwern <schwern@pobox.com>
+
+WHAT IS THIS?
+
+This is Carp::Assert, a perl module.  Please see the README that comes with
+this distribution.
+
+HOW DO I INSTALL IT?
+
+To install this module, cd to the directory that contains this README
+file and type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+To install this module into a specific directory, do:
+   perl Makefile.PL PREFIX=/name/of/the/directory
+   ...the rest is the same...
+
+Please also read the perlmodinstall man page, if available.
+
+WHAT MODULES DO I NEED?
+
+	Carp
