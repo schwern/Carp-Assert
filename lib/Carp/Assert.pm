@@ -2,19 +2,19 @@ package Carp::Assert;
 
 require 5;
 
-use strict;
+use strict qw(subs vars);
 use Exporter;
 
 use vars qw(@ISA $VERSION %EXPORT_TAGS);
 
 BEGIN {
-    $VERSION = '0.11';
+    $VERSION = '0.12';
 
     @ISA = qw(Exporter);
 
     %EXPORT_TAGS = (
-                    NDEBUG => [qw(assert expect DEBUG)],
-                    DEBUG  => [qw(assert expect DEBUG)],
+                    NDEBUG => [qw(assert should shouldnt DEBUG)],
+                    DEBUG  => [qw(assert should shouldnt DEBUG)],
                    );
     Exporter::export_tags(qw(NDEBUG DEBUG));
 }
@@ -24,38 +24,54 @@ sub REAL_DEBUG  ()  { 1 }       # CONSTANT
 sub NDEBUG      ()  { 0 }       # CONSTANT
 
 # Export the proper DEBUG flag according to if :NDEBUG is set.
+# Also export noop versions of our routines if NDEBUG
+sub noop { undef }
+
 sub import {
-    if( grep(/^:NDEBUG$/, @_) or exists $ENV{NDEBUG} ) { 
-        *DEBUG = *NDEBUG;
+    my $env_ndebug = exists $ENV{PERL_NDEBUG} ? $ENV{PERL_NDEBUG}
+                                              : $ENV{NDEBUG};
+    if( grep(/^:NDEBUG$/, @_) or $env_ndebug ) {
+        my $caller = caller;
+        foreach my $func (grep !/^DEBUG$/, @{$EXPORT_TAGS{NDEBUG}}) {
+            *{$caller.'::'.$func} = \&noop;
+        }
+        *{$caller.'::DEBUG'} = \&NDEBUG;
     }
     else {
         *DEBUG = *REAL_DEBUG;
+        Carp::Assert->export_to_level(1, @_);
     }
-    Carp::Assert->export_to_level(1, @_);
 }
 
 sub unimport {
     *DEBUG = *NDEBUG;
     push @_, ':NDEBUG';
-    Carp::Assert->export_to_level(1,@_);
+    goto &import;
 }
 
-sub assert ($) { 
+sub assert ($) {
     unless($_[0]) {
 	require Carp;
-	&Carp::confess("Assert failed\n");
+	&Carp::confess("Assert failed!\n");
     }
     return undef; 
 }
 
-sub expect ($$) {
+sub should ($$) {
     unless($_[0] eq $_[1]) {
         require Carp;
-        &Carp::confess("Assert failed:  '$_[0]' ne '$_[1]'\n");
+        &Carp::confess("Assert failed:  '$_[0]' should be '$_[1]'!\n");
     }
     return undef;
 }
 
+sub shouldnt ($$) {
+    unless($_[0] ne $_[1]) {
+        require Carp;
+        &Carp::confess("Assert failed:  '$_[0]' shouldn't be!\n");
+    }
+    return undef;
+}
 
 return q|You don't just EAT the largest turnip in the world!|;
 #'#
@@ -72,20 +88,21 @@ Carp::Assert - executable comments
     # Assertions are on.
     use Carp::Assert;
 
-    $next_sunrise_time = calc_sunrise;
+    $next_sunrise_time = sunrise();
 
     # Assert that the sun must rise in the next 24 hours.
     assert(($next_sunrise_time - time) < 24*60*60) if DEBUG;
 
-    
+
     # Assertions are off.
     no Carp::Assert;
 
-    $next_pres = divine_next_president;
+    $next_pres = divine_next_president();
 
     # Assert that if you predict Dan Quayle will be the next president
-    # your crystal ball might need some polishing.
-    assert($next_pres ne 'Dan Quayle') if DEBUG;
+    # your crystal ball might need some polishing.  However, since
+    # assertions are off, IT COULD HAPPEN!
+    shouldnt($next_pres, 'Dan Quayle') if DEBUG;
 
 
 =head1 DESCRIPTION
@@ -129,7 +146,7 @@ make sure what your code just did really did happen:
     open(FILE, $filename) || die $!;
     @stuff = <FILE>;
     @stuff = do_something(@stuff);
-    
+
     # I should have some stuff.
     assert(scalar(@stuff) > 0);
 
@@ -173,7 +190,9 @@ you'd replace the comment with an assertion which B<enforces> the comment.
 
 =head1 FUNCTIONS
 
-=head2 B<assert>
+=over 4
+
+=item B<assert>
 
     assert(STATEMENT) if DEBUG;
 
@@ -197,6 +216,38 @@ function main::foo() on line 23 and that foo() was in turn called from
 line 50 in the same file.
 
 
+=item B<should>
+
+=item B<shouldnt>
+
+    should  ($this, $shouldbe)   if DEBUG;
+    shouldnt($this, $shouldntbe) if DEBUG;
+
+Similar to assert(), it is specially for simple "this should be that"
+or "this should be anything but that" style of assertions.
+
+Due to Perl's lack of a good macro system, assert() can only report
+where something failed, but it can't report I<what> failed or I<how>.
+should() and shouldnt() can produce more informative error messages:
+
+    Assert failed:  'this' should be 'that'!
+            Carp::Assert::should('this', 'that') called at moof line 29
+            main::foo() called at moof line 58
+
+So this:
+
+    should($this, $that) if DEBUG;
+
+is similar to this:
+
+    assert($this eq $that) if DEBUG;
+
+except for the better error message.
+
+Currently, should() and shouldnt() can only do simple eq and ne tests
+(respectively).  Future versions may allow regexes.
+
+
 =head1 Debugging vs Production
 
 Because assertions are extra code and because it is sometimes necessary to
@@ -218,10 +269,10 @@ your program entirely, since the if conditional will always be false.
 (This is the best I can do without requiring Filter::cpp)
 
 Another way to switch off all asserts, system wide, is to define the
-NDEBUG environment variable.
+NDEBUG or the PERL_NDEBUG environment variable.
 
 You can safely leave out the "if DEBUG" part, but then your assert() function
-will always execute.  Oh well.
+will always execute (and its arguments evaluated).  Oh well.
 
 
 =head1 Differences from ANSI C
@@ -234,11 +285,12 @@ Well, the obvious one is the "if DEBUG" part.  This is cleanest way I could
 think of to cause each assert() call and its arguments to be removed from
 the program at compile-time, like the ANSI C macro does.
 
-Also, this version of assert does not report the statement which failed,
-just the line number and call frame via Carp::confess.  This was an
-interface issue, since "assert('1 == 1') if DEBUG;  looked really ugly.
-And with Perl, unlike C, you always have the source to look through, so the
-need isn't as great.
+Also, this version of assert does not report the statement which
+failed, just the line number and call frame via Carp::confess.  You
+can't do C<assert('$a == $b')> because $a and $b will probably be
+lexical, and thus unavailable to assert().  But with Perl, unlike C,
+you always have the source to look through, so the need isn't as
+great.
 
 
 =head1 ENVIRONMENT
@@ -251,6 +303,12 @@ Defining NDEBUG switches off all assertions.  It has the same effect
 as changing "use Carp::Assert" to "no Carp::Assert" but it effects all
 code.
 
+=item PERL_NDEBUG
+
+Same as NDEBUG and will override it.  Its provided to give you
+something which won't conflict with any C programs you might be
+working on at the same time.
+
 =back
 
 
@@ -260,7 +318,8 @@ Someday, Perl will have an inline pragma, and the "if DEBUG"
 bletcherousness will go away.
 
 I really need to figure a way to get it to return the given statement
-in the assertion.
+in the assertion.  should() and shouldnt() is a start.  Maybe
+B::Deparse... would assert({$this eq $that}) be too annoying?
 
 
 =head1 AUTHOR
@@ -268,3 +327,5 @@ in the assertion.
 Michael G Schwern <schwern@pobox.com>
 
 =cut
+
+1;

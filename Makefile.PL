@@ -3,13 +3,13 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'  => 'Carp::Assert',
-    'VERSION_FROM' => 'Assert.pm', # finds $VERSION
+    'VERSION_FROM' => 'lib/Carp/Assert.pm', # finds $VERSION
 #    'LIBS' => [''],   # e.g., '-lm' 
 #    'DEFINE'   => '',     # e.g., '-DHAVE_SOMETHING' 
 #    'INC'  => '',     # e.g., '-I/usr/include/other' 
-          'PREREQ_PM' => { Carp => 0 },
-          'dist'      => {COMPRESS => 'gzip -9',
-                  SUFFIX   => '.gz',
-                  DIST_DEFAULT => 'all tardist',
-                 },
+     'PREREQ_PM' => { Carp => 0 },
+     'dist'      => {COMPRESS => 'gzip -9',
+                     SUFFIX   => '.gz',
+                     DIST_DEFAULT => 'all tardist',
+                    },
 );
