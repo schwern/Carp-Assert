@@ -6,3 +6,4 @@ MANIFEST
 Makefile.PL
 t/10enabled.t
 t/20disabled.t
+t/30env_disabled.t
