@@ -1,6 +1,6 @@
 Revision history for Perl extension Carp::Assert.
 
-0.18
+0.18  Tue Mar  2 16:02:23 PST 2004
     - Added copyright and license info
     - Made affirm's code dumping code safe on perl where B::Deparse
       isn't quite up to the job.
