@@ -1,4 +1,7 @@
 Revision history for Perl extension Carp::Assert.
+0.14  Sun Mar 11 23:15:24 GMT 2001
+    * Added $name argument to assert()
+
 0.13  Fri Feb  9 15:28:23 GMT 2001
     - Added shouldn't().
 

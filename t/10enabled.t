@@ -6,7 +6,7 @@ use strict;
 # Test with assert on.
 
 $| = 1;
-print "1..7\n";
+print "1..8\n";
 my $t_num = 1;
 
 local $@;
@@ -20,6 +20,10 @@ print "ok ".$t_num++."\n";
 $@ = '';
 eval { assert(1==1); };
 print "not " if $@ ne '';
+print "ok ".$t_num++."\n";
+
+eval { assert(Dogs->isa('People'), 'Dogs are people, too!') };
+print "not " unless $@ =~ /Dogs are people, too!/;
 print "ok ".$t_num++."\n";
 
 eval { should('this', 'this') };

@@ -8,7 +8,7 @@ use Exporter;
 use vars qw(@ISA $VERSION %EXPORT_TAGS);
 
 BEGIN {
-    $VERSION = '0.13';
+    $VERSION = '0.14';
 
     @ISA = qw(Exporter);
 
@@ -49,12 +49,14 @@ sub unimport {
     goto &import;
 }
 
-sub assert ($) {
+sub assert ($;$) {
     unless($_[0]) {
 	require Carp;
-	&Carp::confess("Assert failed!\n");
+        my $msg = "Assert failed!";
+        $msg .= " - $_[1]" if $_[1];
+	&Carp::confess($msg."\n");
     }
-    return undef; 
+    return undef;
 }
 
 sub should ($$) {
@@ -105,7 +107,6 @@ Carp::Assert - executable comments
 
     # Assert that the sun must rise in the next 24 hours.
     assert(($next_sunrise_time - time) < 24*60*60) if DEBUG;
-
 
     # Assertions are off.
     no Carp::Assert;
@@ -207,7 +208,8 @@ you'd replace the comment with an assertion which B<enforces> the comment.
 
 =item B<assert>
 
-    assert(STATEMENT) if DEBUG;
+    assert(EXPR) if DEBUG;
+    assert(EXPR, $name) if DEBUG;
 
 assert's functionality is effected by compile time value of the DEBUG
 constant.  If DEBUG is true, assert will function as below.  If DEBUG
@@ -227,6 +229,12 @@ The error from assert will look something like this:
 Indicating that in the file "prog" an assert failed inside the
 function main::foo() on line 23 and that foo() was in turn called from
 line 50 in the same file.
+
+If given a $name, assert() will incorporate this into your error message,
+giving users something of a better idea what's going on.
+
+    assert( Dogs->isa('People'), 'Dogs are people, too!' );
+    # Result - "Assert failed! - Dogs are people, too!"
 
 
 =item B<should>
