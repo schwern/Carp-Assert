@@ -174,7 +174,7 @@ use Exporter;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION %EXPORT_TAGS);
 
 BEGIN {
-    $VERSION = 0.06;
+    $VERSION = 0.07;
     
     @ISA = qw(Exporter);
 
