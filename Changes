@@ -1,4 +1,10 @@
 Revision history for Perl extension Carp::Assert.
+
+0.16  Sat Sep  8 20:21:58 EDT 2001
+    * Now works all the way back to 5.004!
+    * Forgot to add a dependency on Test::More
+    - Added embedded tests
+
 0.15  Tue Jun 12 17:59:03 EDT 2001
     - Now using B::Deparse
     * Added affirm()
