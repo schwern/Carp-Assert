@@ -296,19 +296,36 @@ statements into one.
 
 =for example end
 
+=for testing
+my $foo = 1;  my $bar = 2;
+eval { affirm { $foo == $bar } };
+like( $@, '/\$foo == \$bar/' );
+
+
 affirm() also has the nice side effect that if you forgot the C<if DEBUG>
 suffix its arguments will not be evaluated at all.  This can be nice
 if you stick affirm()s with expensive checks into hot loops and other
 time-sensitive parts of your program.
+
+If the $name is left off and your Perl version is 5.6 or higher the
+affirm() diagnostics will include the code begin affirmed.
 
 =cut
 
 sub affirm (&;$) {
     unless( eval { &{$_[0]}; } ) {
         my $name = $_[1];
-        if( !defined $name and eval { require B::Deparse } ) {
-            $name = B::Deparse->new->coderef2text($_[0]);
+
+        if( !defined $name ) {
+            eval {
+                require B::Deparse;
+                $name = B::Deparse->new->coderef2text($_[0]);
+            };
+            $name = 
+              'code display non-functional on this version of Perl, sorry'
+                if $@;
         }
+
         require Carp;
         Carp::confess( _fail_msg($name) );
     }
@@ -486,6 +503,16 @@ Yes, there is a C<shouldn't> routine.  It mostly works, but you B<must>
 put the C<if DEBUG> after it.
 
 It would be nice if we could warn about missing C<if DEBUG>.
+
+
+=head1 COPYRIGHT
+
+Copyright 2002 by Michael G Schwern E<lt>schwern@pobox.comE<gt>.
+
+This program is free software; you can redistribute it and/or 
+modify it under the same terms as Perl itself.
+
+See F<http://www.perl.com/perl/misc/Artistic.html>
 
 
 =head1 AUTHOR
