@@ -9,3 +9,4 @@ t/20disabled.t
 t/30env_disabled.t
 t/30no_disabled.t
 t/embedded-Carp-Assert.t
+META.yml                                Module meta-data (added by MakeMaker)
