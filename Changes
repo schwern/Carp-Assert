@@ -1,4 +1,8 @@
 Revision history for Perl extension Carp::Assert.
+0.12  Tue Feb  6 11:58:11 GMT 2001
+    - Added PERL_NDEBUG environment variable, same as NDEBUG
+    * added should() and shouldnt()
+    * Fixed :NDEBUG/no Carp::Assert to completely shut off assertions.
 
 0.11  Fri Jun  2 13:14:32 EDT 2000
     - Added NDEBUG environment variable to shut off all assertions.
