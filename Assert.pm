@@ -5,22 +5,21 @@ require 5;
 use strict;
 use Exporter;
 
-use vars qw(@ISA @EXPORT $VERSION %EXPORT_TAGS);
+use vars qw(@ISA $VERSION %EXPORT_TAGS);
 
 BEGIN {
     $VERSION = '0.11';
-    
+
     @ISA = qw(Exporter);
 
-    @EXPORT = qw(assert DEBUG);
     %EXPORT_TAGS = (
-                    NDEBUG => [qw(assert DEBUG)],
-                    DEBUG  => [qw(assert DEBUG)],
+                    NDEBUG => [qw(assert expect DEBUG)],
+                    DEBUG  => [qw(assert expect DEBUG)],
                    );
     Exporter::export_tags(qw(NDEBUG DEBUG));
 }
 
-# constant.pm, alas, adds too much load time.
+# constant.pm, alas, adds too much load time (yes, I benchmarked it)
 sub REAL_DEBUG  ()  { 1 }       # CONSTANT
 sub NDEBUG      ()  { 0 }       # CONSTANT
 
@@ -49,6 +48,14 @@ sub assert ($) {
     return undef; 
 }
 
+sub expect ($$) {
+    unless($_[0] eq $_[1]) {
+        require Carp;
+        &Carp::confess("Assert failed:  '$_[0]' ne '$_[1]'\n");
+    }
+    return undef;
+}
+
 
 return q|You don't just EAT the largest turnip in the world!|;
 #'#
@@ -58,7 +65,7 @@ __END__
 
 =head1 NAME 
 
-Carp::Assert - stating the obvious to let the computer know
+Carp::Assert - executable comments
 
 =head1 SYNOPSIS
 
@@ -151,6 +158,17 @@ Here's another bad example:
 This assertion has the side effect of moving to Canada should it fail.
 This is a very bad assertion since error handling should not be
 placed in an assertion, nor should it have side-effects.
+
+In short, an assertion is an executable comment.  For instance, instead
+of writing this
+
+    # $life ends with a '!'
+    $life = begin_life();
+
+you'd replace the comment with an assertion which B<enforces> the comment.
+
+    $life = begin_life();
+    assert( $life =~ /!$/ );
 
 
 =head1 FUNCTIONS
