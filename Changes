@@ -1,4 +1,11 @@
 Revision history for Perl extension Carp::Assert.
+0.15  Tue Jun 12 17:59:03 EDT 2001
+    - Now using B::Deparse
+    * Added affirm()
+    - Tweaked the assertion message a bit
+    - Added more docs about debugging vs production
+    - Added an EFFICIENCY section.
+
 0.14  Sun Mar 11 23:15:24 GMT 2001
     * Added $name argument to assert()
 
