@@ -2,6 +2,7 @@ Revision history for Perl extension Carp::Assert.
 
 0.11  Fri Jun  2 13:14:32 EDT 2000
     - Added NDEBUG environment variable to shut off all assertions.
+    - Added a test for NDEBUG.
 
 0.10  Mon Mar 13 09:31:12 EST 2000
     - Removed uses of constant.pm, reduces load time a bit.
