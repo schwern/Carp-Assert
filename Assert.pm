@@ -110,6 +110,15 @@ Give assert an expression, assert will Carp::confess() if that
 expression is false, otherwise it does nothing.  (DO NOT use the
 return value of assert for anything, I mean it... really!).
 
+The error from assert will look something like this:
+
+    Assert failed
+            Carp::Assert::assert(0) called at prog line 23
+            main::foo called at prog line 50
+
+Indicating that in the file "prog" an assert failed inside the
+function main::foo() on line 23 and that foo() was in turn called from
+line 50 in the same file.
 
 
 =head1 Debugging vs Production
