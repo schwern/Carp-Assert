@@ -4,13 +4,23 @@ Carp::Assert - stating the obvious to let the computer know
 
 =head1 SYNOPSIS
 
-    # Assertations are on.
+    # Assertions are on.
     use Carp::Assert;
-    assert(1 == 1) if DEBUG;
+
+    $next_sunrise_time = calc_sunrise;
+
+    # Assert that the sun must rise in the next 24 hours.
+    assert(($next_sunrise_time - time) < 24*60*60) if DEBUG;
+
     
-    # Assertations are off.
+    # Assertions are off.
     use Carp::Assert qw(:NDEBUG);
-    assert(1 == 1) if DEBUG;
+
+    $next_pres = divine_next_president;
+
+    # Assert that if you predict Dan Quayle will be the next president
+    # your crystal ball might need some polishing.
+    assert($next_pres ne 'Dan Quayle') if DEBUG;
 
 
 =head1 DESCRIPTION
@@ -23,7 +33,7 @@ Carp::Assert is intended for a purpose like the ANSI C library assert.h.
 If you're already familiar with assert.h, then you can probably skip this and
 go straight to the FUNCTIONS section.
 
-Assertations are the explict expressions of your assumptions about the reality
+Assertions are the explict expressions of your assumptions about the reality
 your program is expected to deal with, and a declaration of those which it is
 not.  They are used to prevent your program from blissfully processing garbage
 inputs (garbage in, garbage out becomes garbage in, error out) and to tell you
@@ -31,7 +41,7 @@ when you've produced garbage output.  (If I was going to be a cynic about Perl
 and the user nature, I'd say there are no user inputs but garbage, and Perl
 produces nothing but...)
 
-An assertation is used to prevent the impossible from being asked of your
+An assertion is used to prevent the impossible from being asked of your
 code, or at least tell you when it does.  For example:
     
     # Take the square root of a number.
@@ -44,10 +54,10 @@ code, or at least tell you when it does.  For example:
         return sqrt $num;
     }
 
-The assertation will warn you if a negative number was handed to your
+The assertion will warn you if a negative number was handed to your
 subroutine, a reality the routine has no intention of dealing with.
 
-An assertation should also be used a something of a reality check, to make
+An assertion should also be used a something of a reality check, to make
 sure what your code just did really did happen:
 
     open(FILE, $filename) || die $!;
@@ -57,41 +67,50 @@ sure what your code just did really did happen:
     # I should have some stuff.
     assert(scalar(@stuff) > 0);
     
-The assertation makes sure you have some @stuff at the end.  Maybe the file
+The assertion makes sure you have some @stuff at the end.  Maybe the file
 was empty, maybe do_something() returned an empty list... either way, the
 assert() will give you a clue as to where the problem lies, rather than 50
 lines down when you print out @stuff and discover it to be empty.
 
-Since assertations are designed for debugging and will remove themelves from
-production code, your assertations should be carefully crafted so as to not
+Since assertions are designed for debugging and will remove themelves from
+production code, your assertions should be carefully crafted so as to not
 have any side-effects, change any variables or otherwise have any effect on
 your program.  Here is an example of a bad assertation:
 
-    assert($error = 1 if $king ne 'Henry');  # bad!
+    assert($error = 1 if $king ne 'Henry');  # Bad!
 
 It sets an error flag which may then be used somewhere else in your program. 
-When you shut off your assertations with the $DEBUG flag, $error will no
+When you shut off your assertions with the $DEBUG flag, $error will no
 longer be set.
+
+Here's another bad example:
+
+    assert($next_pres ne 'Dan Quayle' or goto Canada);	# Bad!
+
+This assertion has the side effect of moving to Canada should it fail.
+This is a very bad assertion since error handling should not be
+placed in an assertion, nor should it have side-effects.
 
 
 =head1 FUNCTIONS
 
-=head2 assert
+=head2 B<assert>
 
-    assert(1==1) if DEBUG;
+    assert(STATEMENT) if DEBUG;
 
-assert's functionality is effected by compile time value of the DEBUG constant.  If DEBUG is true, assert will function as below.  If
-DEBUG is false the assert function will compile itself out of the program.  
+assert's functionality is effected by compile time value of the DEBUG
+constant.  If DEBUG is true, assert will function as below.  If DEBUG
+is false the assert function will compile itself out of the program.
 See L<Debugging vs Production> for details.
 
-Give assert an expression, assert will Carp::confess() if that expression is
-false, return undef if it is true (DO NOT use the return value of assert for
-anything, I mean it... really!).
+Give assert an expression, assert will Carp::confess() if that
+expression is false, return undef if it is true (DO NOT use the return
+value of assert for anything, I mean it... really!).
 
 
 =head1 Debugging vs Production
 
-Because assertations are extra code and because it is sometimes necessary to
+Because assertions are extra code and because it is sometimes necessary to
 place them in 'hot' portions of your code where speed is paramount,
 Carp::Assert provides the option to remove its assert() calls from your
 program.
@@ -100,7 +119,7 @@ So, we provide a way to force Perl to inline the switched off assert()
 routine, thereby removing almost all performance impact on your production
 code.
 
-    use Carp::Assert qw(:NDEBUG);  # assertations are off.
+    use Carp::Assert qw(:NDEBUG);  # assertions are off.
     assert(1==1) if DEBUG;
 
 DEBUG is a constant set to 0.  Adding the 'if DEBUG' condition on your
@@ -132,8 +151,11 @@ need isn't as great.
 
 =head1 BUGS, CAVETS and other MUSINGS
 
-Someday, Perl will have an inline pragma, and the "if DEBUG" bletcherousness
-will go away.
+Someday, Perl will have an inline pragma, and the "if DEBUG"
+bletcherousness will go away.
+
+I really need to figure a way to get it to return the given statement
+in the assertion.
 
 
 =head1 AUTHOR
@@ -179,10 +201,12 @@ sub import {
 	Carp::Assert->export_to_level(1, @_);
 }
 
-require Carp;
+
 sub assert ($) { 
-	$_[0] or
-    &Carp::confess("Assert failed");
+	unless($_[0]) {
+		require Carp;
+		&Carp::confess("Assert failed");
+	}
     return undef; 
 }
 
