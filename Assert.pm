@@ -29,21 +29,22 @@ Carp::Assert - stating the obvious to let the computer know
     occur."
         - Dan Quayle
 
-Carp::Assert is intended for a purpose like the ANSI C library assert.h.
-If you're already familiar with assert.h, then you can probably skip this and
-go straight to the FUNCTIONS section.
+Carp::Assert is intended for a purpose like the ANSI C library
+assert.h.  If you're already familiar with assert.h, then you can
+probably skip this and go straight to the FUNCTIONS section.
 
-Assertions are the explict expressions of your assumptions about the reality
-your program is expected to deal with, and a declaration of those which it is
-not.  They are used to prevent your program from blissfully processing garbage
-inputs (garbage in, garbage out becomes garbage in, error out) and to tell you
-when you've produced garbage output.  (If I was going to be a cynic about Perl
-and the user nature, I'd say there are no user inputs but garbage, and Perl
-produces nothing but...)
+Assertions are the explict expressions of your assumptions about the
+reality your program is expected to deal with, and a declaration of
+those which it is not.  They are used to prevent your program from
+blissfully processing garbage inputs (garbage in, garbage out becomes
+garbage in, error out) and to tell you when you've produced garbage
+output.  (If I was going to be a cynic about Perl and the user nature,
+I'd say there are no user inputs but garbage, and Perl produces
+nothing but...)
 
-An assertion is used to prevent the impossible from being asked of your
-code, or at least tell you when it does.  For example:
-    
+An assertion is used to prevent the impossible from being asked of
+your code, or at least tell you when it does.  For example:
+
     # Take the square root of a number.
     sub my_sqrt {
         my($num) = shift;
@@ -57,8 +58,8 @@ code, or at least tell you when it does.  For example:
 The assertion will warn you if a negative number was handed to your
 subroutine, a reality the routine has no intention of dealing with.
 
-An assertion should also be used a something of a reality check, to make
-sure what your code just did really did happen:
+An assertion should also be used a something of a reality check, to
+make sure what your code just did really did happen:
 
     open(FILE, $filename) || die $!;
     @stuff = <FILE>;
@@ -66,22 +67,24 @@ sure what your code just did really did happen:
     
     # I should have some stuff.
     assert(scalar(@stuff) > 0);
-    
-The assertion makes sure you have some @stuff at the end.  Maybe the file
-was empty, maybe do_something() returned an empty list... either way, the
-assert() will give you a clue as to where the problem lies, rather than 50
-lines down when you print out @stuff and discover it to be empty.
 
-Since assertions are designed for debugging and will remove themelves from
-production code, your assertions should be carefully crafted so as to not
-have any side-effects, change any variables or otherwise have any effect on
-your program.  Here is an example of a bad assertation:
+The assertion makes sure you have some @stuff at the end.  Maybe the
+file was empty, maybe do_something() returned an empty list... either
+way, the assert() will give you a clue as to where the problem lies,
+rather than 50 lines down when you print out @stuff and discover it to
+be empty.
+
+Since assertions are designed for debugging and will remove themelves
+from production code, your assertions should be carefully crafted so
+as to not have any side-effects, change any variables or otherwise
+have any effect on your program.  Here is an example of a bad
+assertation:
 
     assert($error = 1 if $king ne 'Henry');  # Bad!
 
-It sets an error flag which may then be used somewhere else in your program. 
-When you shut off your assertions with the $DEBUG flag, $error will no
-longer be set.
+It sets an error flag which may then be used somewhere else in your
+program. When you shut off your assertions with the $DEBUG flag,
+$error will no longer be set.
 
 Here's another bad example:
 
@@ -104,8 +107,9 @@ is false the assert function will compile itself out of the program.
 See L<Debugging vs Production> for details.
 
 Give assert an expression, assert will Carp::confess() if that
-expression is false, return undef if it is true (DO NOT use the return
-value of assert for anything, I mean it... really!).
+expression is false, otherwise it does nothing.  (DO NOT use the
+return value of assert for anything, I mean it... really!).
+
 
 
 =head1 Debugging vs Production
@@ -164,6 +168,9 @@ Michael G Schwern <schwern@pobox.com>
 
 =cut
 
+#'#
+#"#
+
 package Carp::Assert;
 
 require 5;
@@ -174,14 +181,14 @@ use Exporter;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION %EXPORT_TAGS);
 
 BEGIN {
-    $VERSION = 0.07;
+    $VERSION = 0.08;
     
     @ISA = qw(Exporter);
 
     @EXPORT = qw(assert DEBUG);
     %EXPORT_TAGS = (
-					NDEBUG => [qw(assert DEBUG)],
-					DEBUG  => [qw(assert DEBUG)],
+		    NDEBUG => [qw(assert DEBUG)],
+		    DEBUG  => [qw(assert DEBUG)],
                	   );
     Exporter::export_tags(qw(NDEBUG DEBUG));
 }
@@ -192,21 +199,21 @@ use constant NDEBUG 	=> 0;
 
 # Export the proper DEBUG flag according to if :NDEBUG is set.
 sub import {
-	if( grep /^:NDEBUG/, @_ ) { 
-		*DEBUG = *NDEBUG;
-	}
-	else {
-		*DEBUG = *REAL_DEBUG;
-	}
-	Carp::Assert->export_to_level(1, @_);
+    if( grep /^:NDEBUG/, @_ ) { 
+	*DEBUG = *NDEBUG;
+    }
+    else {
+	*DEBUG = *REAL_DEBUG;
+    }
+    Carp::Assert->export_to_level(1, @_);
 }
 
 
 sub assert ($) { 
-	unless($_[0]) {
-		require Carp;
-		&Carp::confess("Assert failed");
-	}
+    unless($_[0]) {
+	require Carp;
+	&Carp::confess("Assert failed\n");
+    }
     return undef; 
 }
 
