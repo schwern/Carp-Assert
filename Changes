@@ -1,5 +1,8 @@
 Revision history for Perl extension Carp::Assert.
 
+0.17  Mon Oct  1 16:43:00 EDT 2001
+    * Wouldn't install without Test::Inline.  Removed that dependency.
+
 0.16  Sat Sep  8 20:21:58 EDT 2001
     * Now works all the way back to 5.004!
     * Forgot to add a dependency on Test::More
