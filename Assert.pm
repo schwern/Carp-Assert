@@ -1,3 +1,61 @@
+package Carp::Assert;
+
+require 5;
+
+use strict;
+use Exporter;
+
+use vars qw(@ISA @EXPORT $VERSION %EXPORT_TAGS);
+
+BEGIN {
+    $VERSION = '0.10';
+    
+    @ISA = qw(Exporter);
+
+    @EXPORT = qw(assert DEBUG);
+    %EXPORT_TAGS = (
+                    NDEBUG => [qw(assert DEBUG)],
+                    DEBUG  => [qw(assert DEBUG)],
+                   );
+    Exporter::export_tags(qw(NDEBUG DEBUG));
+}
+
+# constant.pm, alas, adds too much load time.
+sub REAL_DEBUG  ()  { 1 }       # CONSTANT
+sub NDEBUG      ()  { 0 }       # CONSTANT
+
+# Export the proper DEBUG flag according to if :NDEBUG is set.
+sub import {
+    if( grep /^:NDEBUG/, @_ ) { 
+        *DEBUG = *NDEBUG;
+    }
+    else {
+        *DEBUG = *REAL_DEBUG;
+    }
+    Carp::Assert->export_to_level(1, @_);
+}
+
+sub unimport {
+    *DEBUG = *NDEBUG;
+    push @_, ':NDEBUG';
+    Carp::Assert->export_to_level(1,@_);
+}
+
+sub assert ($) { 
+    unless($_[0]) {
+	require Carp;
+	&Carp::confess("Assert failed\n");
+    }
+    return undef; 
+}
+
+
+return q|You don't just EAT the largest turnip in the world!|;
+#'#
+
+__END__
+=pod
+
 =head1 NAME 
 
 Carp::Assert - stating the obvious to let the computer know
@@ -14,7 +72,7 @@ Carp::Assert - stating the obvious to let the computer know
 
     
     # Assertions are off.
-    use Carp::Assert qw(:NDEBUG);
+    no Carp::Assert;
 
     $next_pres = divine_next_president;
 
@@ -132,7 +190,7 @@ So, we provide a way to force Perl to inline the switched off assert()
 routine, thereby removing almost all performance impact on your production
 code.
 
-    use Carp::Assert qw(:NDEBUG);  # assertions are off.
+    no Carp::Assert;  # assertions are off.
     assert(1==1) if DEBUG;
 
 DEBUG is a constant set to 0.  Adding the 'if DEBUG' condition on your
@@ -176,55 +234,3 @@ in the assertion.
 Michael G Schwern <schwern@pobox.com>
 
 =cut
-
-#'#
-#"#
-
-package Carp::Assert;
-
-require 5;
-
-use strict;
-use Exporter;
-
-use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION %EXPORT_TAGS);
-
-BEGIN {
-    $VERSION = 0.08;
-    
-    @ISA = qw(Exporter);
-
-    @EXPORT = qw(assert DEBUG);
-    %EXPORT_TAGS = (
-            NDEBUG => [qw(assert DEBUG)],
-            DEBUG  => [qw(assert DEBUG)],
-                   );
-    Exporter::export_tags(qw(NDEBUG DEBUG));
-}
-
-use subs qw(DEBUG);
-use constant REAL_DEBUG => 1;
-use constant NDEBUG     => 0;
-
-# Export the proper DEBUG flag according to if :NDEBUG is set.
-sub import {
-    if( grep /^:NDEBUG/, @_ ) { 
-    *DEBUG = *NDEBUG;
-    }
-    else {
-    *DEBUG = *REAL_DEBUG;
-    }
-    Carp::Assert->export_to_level(1, @_);
-}
-
-
-sub assert ($) { 
-    unless($_[0]) {
-    require Carp;
-    &Carp::confess("Assert failed\n");
-    }
-    return undef; 
-}
-
-
-return q|You don't just EAT the largest turnip in the world!|;
