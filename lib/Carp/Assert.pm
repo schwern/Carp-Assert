@@ -1,6 +1,6 @@
 package Carp::Assert;
 
-require 5;
+require 5.004;
 
 use strict qw(subs vars);
 use Exporter;
@@ -55,28 +55,6 @@ sub unimport {
 }
 
 
-sub assert ($;$) {
-    unless($_[0]) {
-        require Carp;
-        Carp::confess( _fail_msg($_[1]) );
-    }
-    return undef;
-}
-
-
-sub affirm (&;$) {
-    unless( eval { &{$_[0]}; } ) {
-        my $name = $_[1];
-        if( !defined $name and eval { require B::Deparse } ) {
-            $name = B::Deparse->new->coderef2text($_[0]);
-        }
-        require Carp;
-        Carp::confess( _fail_msg($name) );
-    }
-    return undef;
-}
-
-
 # Can't call confess() here or the stack trace will be wrong.
 sub _fail_msg {
     my($name) = shift;
@@ -86,42 +64,8 @@ sub _fail_msg {
     return $msg;
 }
 
-sub should ($$) {
-    unless($_[0] eq $_[1]) {
-        require Carp;
-        &Carp::confess( _fail_msg("'$_[0]' should be '$_[1]'!") );
-    }
-    return undef;
-}
 
-sub shouldnt ($$) {
-    unless($_[0] ne $_[1]) {
-        require Carp;
-        &Carp::confess( _fail_msg("'$_[0]' shouldn't be that!") );
-    }
-    return undef;
-}
-
-# Sorry, I couldn't resist.
-sub shouldn't ($$) {     # emacs cperl-mode madness #' sub {
-    my $env_ndebug = exists $ENV{PERL_NDEBUG} ? $ENV{PERL_NDEBUG}
-                                              : $ENV{NDEBUG};
-    if( $env_ndebug ) {
-        return undef;
-    }
-    else {
-        shouldnt($_[0], $_[1]);
-    }
-}
-
-
-return q|You don't just EAT the largest turnip in the world!|;
-#'#
-
-__END__
-=pod
-
-=head1 NAME 
+=head1 NAME
 
 Carp::Assert - executable comments
 
@@ -154,6 +98,10 @@ Carp::Assert - executable comments
 
 
 =head1 DESCRIPTION
+
+=for testing
+use Carp::Assert;
+
 
     "We are ready for any unforseen event that may or may not 
     occur."
@@ -216,7 +164,7 @@ It sets an error flag which may then be used somewhere else in your
 program. When you shut off your assertions with the $DEBUG flag,
 $error will no longer be set.
 
-Here's another bad example:
+Here's another example of B<bad> use:
 
     assert($next_pres ne 'Dan Quayle' or goto Canada);  # Bad!
 
@@ -235,6 +183,10 @@ you'd replace the comment with an assertion which B<enforces> the comment.
     $life = begin_life();
     assert( $life =~ /!$/ );
 
+=for testing
+my $life = 'Whimper!';
+ok( eval { assert( $life =~ /!$/ ); 1 },   'life ends with a bang' );
+
 
 =head1 FUNCTIONS
 
@@ -246,19 +198,36 @@ you'd replace the comment with an assertion which B<enforces> the comment.
     assert(EXPR, $name) if DEBUG;
 
 assert's functionality is effected by compile time value of the DEBUG
-constant.  If DEBUG is true, assert will function as below.  If DEBUG
-is false the assert function will compile itself out of the program.
+constant, controlled by saying C<use Carp::Assert> or C<no
+Carp::Assert>.  In the former case, assert will function as below.
+Otherwise, the assert function will compile itself out of the program.
 See L<Debugging vs Production> for details.
+
+=for testing
+{
+  package Some::Other;
+  no Carp::Assert;
+  ::ok( eval { assert(0) if DEBUG; 1 } );
+}
 
 Give assert an expression, assert will Carp::confess() if that
 expression is false, otherwise it does nothing.  (DO NOT use the
 return value of assert for anything, I mean it... really!).
+
+=for testing
+ok( eval { assert(1); 1 } );
+ok( !eval { assert(0); 1 } );
 
 The error from assert will look something like this:
 
     Assertion failed!
             Carp::Assert::assert(0) called at prog line 23
             main::foo called at prog line 50
+
+=for testing
+eval { assert(0) };
+like( $@, qr/^Assertion failed!/,       'error format' );
+like( $@, qr/Carp::Assert::assert\(0\) called at/,      '  with stack trace' );
 
 Indicating that in the file "prog" an assert failed inside the
 function main::foo() on line 23 and that foo() was in turn called from
@@ -269,6 +238,21 @@ giving users something of a better idea what's going on.
 
     assert( Dogs->isa('People'), 'Dogs are people, too!' ) if DEBUG;
     # Result - "Assertion (Dogs are people, too!) failed!"
+
+=for testing
+eval { assert( Dogs->isa('People'), 'Dogs are people, too!' ); };
+like( $@, qr/^Assertion \(Dogs are people, too!\) failed!/, 'names' );
+
+=cut
+
+sub assert ($;$) {
+    unless($_[0]) {
+        require Carp;
+        Carp::confess( _fail_msg($_[1]) );
+    }
+    return undef;
+}
+
 
 =item B<affirm>
 
@@ -282,17 +266,34 @@ assert() can without letting the debugging code leak out into
 production and without having to smash together several
 statements into one.
 
+=also begin example
+
     affirm {
         my $customer = Customer->new($customerid);
         my @cards = $customer->credit_cards;
         grep { $_->is_active } @cards;
     } "Our customer has an active credit card";
 
+=also end example
+
 affirm() also has the nice side effect that if you forgot the C<if DEBUG>
 suffix its arguments will not be evaluated at all.  This can be nice
 if you stick affirm()s with expensive checks into hot loops and other
 time-sensitive parts of your program.
 
+=cut
+
+sub affirm (&;$) {
+    unless( eval { &{$_[0]}; } ) {
+        my $name = $_[1];
+        if( !defined $name and eval { require B::Deparse } ) {
+            $name = B::Deparse->new->coderef2text($_[0]);
+        }
+        require Carp;
+        Carp::confess( _fail_msg($name) );
+    }
+    return undef;
+}
 
 =item B<should>
 
@@ -324,6 +325,36 @@ except for the better error message.
 
 Currently, should() and shouldnt() can only do simple eq and ne tests
 (respectively).  Future versions may allow regexes.
+
+=cut
+
+sub should ($$) {
+    unless($_[0] eq $_[1]) {
+        require Carp;
+        &Carp::confess( _fail_msg("'$_[0]' should be '$_[1]'!") );
+    }
+    return undef;
+}
+
+sub shouldnt ($$) {
+    unless($_[0] ne $_[1]) {
+        require Carp;
+        &Carp::confess( _fail_msg("'$_[0]' shouldn't be that!") );
+    }
+    return undef;
+}
+
+# Sorry, I couldn't resist.
+sub shouldn't ($$) {     # emacs cperl-mode madness #' sub {
+    my $env_ndebug = exists $ENV{PERL_NDEBUG} ? $ENV{PERL_NDEBUG}
+                                              : $ENV{NDEBUG};
+    if( $env_ndebug ) {
+        return undef;
+    }
+    else {
+        shouldnt($_[0], $_[1]);
+    }
+}
 
 
 =head1 Debugging vs Production
@@ -443,4 +474,4 @@ Michael G Schwern <schwern@pobox.com>
 
 =cut
 
-1;
+return q|You don't just EAT the largest turnip in the world!|;
