@@ -7,7 +7,7 @@ WriteMakefile(
     NAME        => 'Carp::Assert',
     VERSION_FROM => 'lib/Carp/Assert.pm', # finds $VERSION
     PREREQ_PM   => { Carp       => 0,
-                     Test::More => 0.18,
+                     Test::More => 0.40,
                    },
     'dist'      => {COMPRESS => 'gzip -9',
                     SUFFIX   => '.gz',
