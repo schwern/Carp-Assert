@@ -8,7 +8,7 @@ use Exporter;
 use vars qw(@ISA $VERSION %EXPORT_TAGS);
 
 BEGIN {
-    $VERSION = '0.15';
+    $VERSION = '0.16';
 
     @ISA = qw(Exporter);
 
@@ -30,10 +30,10 @@ sub noop_affirm (&;$) { undef };
 
 sub import {
     my $env_ndebug = exists $ENV{PERL_NDEBUG} ? $ENV{PERL_NDEBUG}
-                                              : $ENV{NDEBUG};
+                                              : $ENV{'NDEBUG'};
     if( grep(/^:NDEBUG$/, @_) or $env_ndebug ) {
         my $caller = caller;
-        foreach my $func (grep !/^DEBUG$/, @{$EXPORT_TAGS{NDEBUG}}) {
+        foreach my $func (grep !/^DEBUG$/, @{$EXPORT_TAGS{'NDEBUG'}}) {
             if( $func eq 'affirm' ) {
                 *{$caller.'::'.$func} = \&noop_affirm;
             } else {
@@ -44,9 +44,21 @@ sub import {
     }
     else {
         *DEBUG = *REAL_DEBUG;
-        Carp::Assert->export_to_level(1, @_);
+        Carp::Assert->_export_to_level(1, @_);
     }
 }
+
+
+# 5.004's Exporter doesn't have export_to_level.
+sub _export_to_level
+{
+      my $pkg = shift;
+      my $level = shift;
+      (undef) = shift;                  # XXX redundant arg
+      my $callpkg = caller($level);
+      $pkg->export($callpkg, @_);
+}
+
 
 sub unimport {
     *DEBUG = *NDEBUG;
@@ -123,6 +135,8 @@ nothing but...)
 An assertion is used to prevent the impossible from being asked of
 your code, or at least tell you when it does.  For example:
 
+=for example begin
+
     # Take the square root of a number.
     sub my_sqrt {
         my($num) = shift;
@@ -132,6 +146,12 @@ your code, or at least tell you when it does.  For example:
 
         return sqrt $num;
     }
+
+=for example end
+
+=for example_testing
+is( my_sqrt(4),  2,            'my_sqrt example with good input' );
+ok( !eval{ my_sqrt(-1); 1 },   '  and pukes on bad' );
 
 The assertion will warn you if a negative number was handed to your
 subroutine, a reality the routine has no intention of dealing with.
@@ -226,8 +246,8 @@ The error from assert will look something like this:
 
 =for testing
 eval { assert(0) };
-like( $@, qr/^Assertion failed!/,       'error format' );
-like( $@, qr/Carp::Assert::assert\(0\) called at/,      '  with stack trace' );
+like( $@, '/^Assertion failed!/',       'error format' );
+like( $@, '/Carp::Assert::assert\(0\) called at/',      '  with stack trace' );
 
 Indicating that in the file "prog" an assert failed inside the
 function main::foo() on line 23 and that foo() was in turn called from
@@ -241,7 +261,7 @@ giving users something of a better idea what's going on.
 
 =for testing
 eval { assert( Dogs->isa('People'), 'Dogs are people, too!' ); };
-like( $@, qr/^Assertion \(Dogs are people, too!\) failed!/, 'names' );
+like( $@, '/^Assertion \(Dogs are people, too!\) failed!/', 'names' );
 
 =cut
 
@@ -266,7 +286,7 @@ assert() can without letting the debugging code leak out into
 production and without having to smash together several
 statements into one.
 
-=also begin example
+=for example begin
 
     affirm {
         my $customer = Customer->new($customerid);
@@ -274,7 +294,7 @@ statements into one.
         grep { $_->is_active } @cards;
     } "Our customer has an active credit card";
 
-=also end example
+=for example end
 
 affirm() also has the nice side effect that if you forgot the C<if DEBUG>
 suffix its arguments will not be evaluated at all.  This can be nice
@@ -347,7 +367,7 @@ sub shouldnt ($$) {
 # Sorry, I couldn't resist.
 sub shouldn't ($$) {     # emacs cperl-mode madness #' sub {
     my $env_ndebug = exists $ENV{PERL_NDEBUG} ? $ENV{PERL_NDEBUG}
-                                              : $ENV{NDEBUG};
+                                              : $ENV{'NDEBUG'};
     if( $env_ndebug ) {
         return undef;
     }
