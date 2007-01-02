@@ -1,4 +1,6 @@
-Revision history for Perl extension Carp::Assert.
+0.19  Tue Jan  2 15:13:09 PST 2007
+    - Fixed installation for those who have Pod::Tests but pod2test is
+      not in their PATH as some CPAN shell configurations do.
 
 0.18  Tue Mar  2 16:02:23 PST 2004
     - Added copyright and license info

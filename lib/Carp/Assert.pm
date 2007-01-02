@@ -8,7 +8,7 @@ use Exporter;
 use vars qw(@ISA $VERSION %EXPORT_TAGS);
 
 BEGIN {
-    $VERSION = '0.18';
+    $VERSION = '0.19';
 
     @ISA = qw(Exporter);
 
