@@ -21,14 +21,12 @@ WriteMakefile(
         my($self) = @_;
 
         return $self->SUPER::top_targets(@_) unless
-          eval { require Test::Inline; 1 };
+          eval { require Pod::Tests; 1 };
 
         my $out = "POD2TEST_EXE = pod2test\n";
 
         $out .= $self->SUPER::top_targets(@_);
         $out =~ s/^(pure_all\b.*)/$1 testifypods/m;
-
-        $out .= "\n\ntestifypods : \n";
 
         foreach my $pod (keys %{$self->{MAN1PODS}},
                          keys %{$self->{MAN3PODS}})
@@ -36,8 +34,27 @@ WriteMakefile(
             (my $test = $pod) =~ s/\.(pm|pod)$//;
             $test =~ s/^lib\W//;
             $test =~ s/\W/-/;
-            $test = "embedded-$test.t";
-            $out .= "\t$self->{NOECHO}\$(POD2TEST_EXE) $pod t/$test \\\n";
+            $test = "t/embedded-$test.t";
+            
+            $pod2test{$pod} = $test;
+        }
+
+        $out .= <<"END_OF_MAKE";
+
+testifypods : @{[ join " ", values %pod2test ]}
+\t\$(NOECHO) \$(NOOP)
+
+END_OF_MAKE
+        
+        for my $pod (keys %pod2test) {
+            my $test = $pod2test{$pod};
+            
+            $out .= <<"END_OF_MAKE";
+$test : $pod
+\t\$(NOECHO) \$(ECHO) Testifying $pod to $test
+\t\$(NOECHO) \$(POD2TEST_EXE) $pod $test
+
+END_OF_MAKE
         }
 
         return $out;
