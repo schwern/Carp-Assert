@@ -1,4 +1,4 @@
-0.20
+0.20  Thu Jan  4 19:08:00 PST 2007
     - The tests will no longer fail should the user have NDEBUG or
       PERL_NDEBUG environment variables set [rt.cpan.org 21170]
     - Update the license link to point to the whole Perl license, not
