@@ -504,16 +504,33 @@ working on at the same time.
 
 =head1 BUGS, CAVETS and other MUSINGS
 
-Someday, Perl will have an inline pragma, and the C<if DEBUG>
-bletcherousness will go away.
+=head2 Conflicts with C<POSIX.pm>
+
+The C<POSIX> module exports an C<assert> routine which will conflict with C<Carp::Assert> if both are used in the same namespace.  If you are using both together, prevent C<POSIX> from exporting like so:
+
+    use POSIX ();
+    use Carp::Assert;
+
+Since C<POSIX> exports way too much, you should be using it like that anyway.
+
+=head2 C<affirm> and C<$^S>
 
 affirm() mucks with the expression's caller and it is run in an eval
 so anything that checks $^S will be wrong.
 
+=head2 C<shouldn't>
+
 Yes, there is a C<shouldn't> routine.  It mostly works, but you B<must>
 put the C<if DEBUG> after it.
 
+=head2 missing C<if DEBUG>
+
 It would be nice if we could warn about missing C<if DEBUG>.
+
+
+=head1 SEE ALSO
+
+L<assertions> is a new module available in 5.9.0 which provides assertions which can be enabled/disabled at compile time for real, no C<if DEBUG> necessary.
 
 
 =head1 COPYRIGHT
