@@ -4,10 +4,13 @@
 
 
 use strict;
-use Test::More tests => 4;
+use Test::More tests => 25;
 
 
 use Carp::Assert qw(:NDEBUG);
+
+
+my $tests = <<'END_OF_TESTS';
 eval { assert(1==0) if DEBUG; };
 is $@, '';
 
@@ -22,3 +25,18 @@ is $@, '';
 
 eval { shouldnt('this', 'this') };
 is $@, '';
+END_OF_TESTS
+
+
+my @disable_code = (
+    "use Carp::Assert qw(:NDEBUG);",
+    "no Carp::Assert;",
+    'BEGIN { $ENV{NDEBUG} = 1; }  use Carp::Assert;',
+    'BEGIN { $ENV{PERL_NDEBUG} = 1; }  use Carp::Assert;',
+    'BEGIN { $ENV{NDEBUG} = 0;  $ENV{PERL_NDEBUG} = 1;  use Carp::Assert; }'
+);
+
+for my $code (@disable_code) {
+    eval $code . "\n" . $tests;
+    is $@, '';
+}
