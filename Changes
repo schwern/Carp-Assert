@@ -1,3 +1,7 @@
+0.20
+    - The tests will no longer fail should the user have NDEBUG or
+      PERL_NDEBUG environment variables set [rt.cpan.org 21170]
+
 0.19  Tue Jan  2 15:13:09 PST 2007
     - Fixed installation for those who have Pod::Tests but pod2test is
       not in their PATH as some CPAN shell configurations do.

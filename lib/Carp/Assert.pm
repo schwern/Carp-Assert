@@ -8,7 +8,7 @@ use Exporter;
 use vars qw(@ISA $VERSION %EXPORT_TAGS);
 
 BEGIN {
-    $VERSION = '0.19';
+    $VERSION = '0.20';
 
     @ISA = qw(Exporter);
 
@@ -111,9 +111,19 @@ Carp::Assert - executable comments
 
 =head1 DESCRIPTION
 
-=for testing
-use Carp::Assert;
+=begin testing
 
+BEGIN {
+    local %ENV = %ENV;
+    delete @ENV{qw(PERL_NDEBUG NDEBUG)};
+    require Carp::Assert;
+    Carp::Assert->import;
+}
+
+local %ENV = %ENV;
+delete @ENV{qw(PERL_NDEBUG NDEBUG)};
+
+=end testing
 
     "We are ready for any unforseen event that may or may not 
     occur."

@@ -33,10 +33,12 @@ my @disable_code = (
     "no Carp::Assert;",
     'BEGIN { $ENV{NDEBUG} = 1; }  use Carp::Assert;',
     'BEGIN { $ENV{PERL_NDEBUG} = 1; }  use Carp::Assert;',
-    'BEGIN { $ENV{NDEBUG} = 0;  $ENV{PERL_NDEBUG} = 1;  use Carp::Assert; }'
+    'BEGIN { $ENV{NDEBUG} = 0;  $ENV{PERL_NDEBUG} = 1; } use Carp::Assert;'
 );
 
 for my $code (@disable_code) {
+    local %ENV = %ENV;
+    delete @ENV{qw(PERL_NDEBUG NDEBUG)};
     eval $code . "\n" . $tests;
     is $@, '';
 }

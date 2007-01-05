@@ -5,8 +5,21 @@
 use strict;
 use Test::More tests => 8;
 
+# Make sure we're shielded against the user possibly having
+# NDEBUG or PERL_NDEBUG set.  Localize the changes because changes
+# to %ENV persist across processes in VMS.
+BEGIN {
+    local %ENV = %ENV;
+    delete @ENV{qw(PERL_NDEBUG NDEBUG)};
+    require Carp::Assert;
+    Carp::Assert->import;
+}
 
-use Carp::Assert;
+# shouldn't makes its decision at run-time
+local %ENV = %ENV;
+delete @ENV{qw(PERL_NDEBUG NDEBUG)};
+
+
 eval { assert(1==0) if DEBUG; };
 like $@, '/^Assertion failed/i';
 
