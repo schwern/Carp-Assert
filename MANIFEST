@@ -6,6 +6,4 @@ README
 lib/Carp/Assert.pm
 t/10enabled.t
 t/20disabled.t
-t/30env_disabled.t
-t/30no_disabled.t
 t/embedded-Carp-Assert.t
