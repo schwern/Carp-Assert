@@ -1,16 +1,10 @@
 #!/usr/bin/perl -w
 
+# Test environment variable control
 
 use strict;
+use Test::More tests => 5;
 
-# Test with assert on.
-
-$| = 1;
-print "1..5\n";
-my $t_num = 1;
-
-local $@;
-$@ = '';
 
 my %Saved_Env;
 my @Env_Keys;
@@ -39,25 +33,20 @@ END {
 
 use Carp::Assert;
 eval { assert(1==0) if DEBUG; };
-print "not " if $@;
-print "ok ",$t_num++,"\n";
+is $@, '';
 
-$@ = '';
+
 eval { assert(1==0); };
-print "not " if $@;
-print "ok ",$t_num++,"\n";
+is $@, '';
 
-$@ = '';
+
 eval { should('this', 'moofer') if DEBUG };
-print "not " if $@ ne '';
-print "ok ".$t_num++."\n";
+is $@, '';
 
-$@ = '';
+
 eval { shouldnt('this', 'this') };
-print "not " if $@ ne '';
-print "ok ".$t_num++."\n";
+is $@, '';
 
-$@ = '';
+
 eval { shouldn't('this', 'this') };
-print "not " if $@ ne '';
-print "ok ".$t_num++."\n";
+is $@, '';
