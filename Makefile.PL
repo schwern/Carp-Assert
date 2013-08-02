@@ -13,6 +13,11 @@ WriteMakefile(
                     SUFFIX   => '.gz',
                     DIST_DEFAULT => 'all tardist',
                    },
+    META_MERGE  => {
+      resources   => {
+          repository  =>  'https://github.com/schwern/Carp-Assert',
+      },
+    },
 );
 
 {
