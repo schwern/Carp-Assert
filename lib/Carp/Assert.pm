@@ -133,7 +133,7 @@ Carp::Assert is intended for a purpose like the ANSI C library
 assert.h.  If you're already familiar with assert.h, then you can
 probably skip this and go straight to the FUNCTIONS section.
 
-Assertions are the explict expressions of your assumptions about the
+Assertions are the explicit expressions of your assumptions about the
 reality your program is expected to deal with, and a declaration of
 those which it is not.  They are used to prevent your program from
 blissfully processing garbage inputs (garbage in, garbage out becomes
@@ -182,11 +182,11 @@ way, the assert() will give you a clue as to where the problem lies,
 rather than 50 lines down at when you wonder why your program isn't
 printing anything.
 
-Since assertions are designed for debugging and will remove themelves
+Since assertions are designed for debugging and will remove themselves
 from production code, your assertions should be carefully crafted so
 as to not have any side-effects, change any variables, or otherwise
 have any effect on your program.  Here is an example of a bad
-assertation:
+assertion:
 
     assert($error = 1 if $king ne 'Henry');  # Bad!
 
@@ -478,7 +478,7 @@ subroutine (even if that subroutine does nothing).
 Forgetting the C<if DEBUG> on an C<affirm()> is not so bad.  While you
 still have the overhead of calling a subroutine (one that does
 nothing) it will B<not> evaluate its code block and that can save
-alot.
+a lot.
 
 Try to remember the B<if DEBUG>.
 
