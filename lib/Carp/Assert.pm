@@ -534,6 +534,19 @@ It would be nice if we could warn about missing C<if DEBUG>.
 L<assert.h|http://en.wikipedia.org/wiki/Assert.h> - the wikipedia
 page about C<assert.h>.
 
+L<Carp::Assert::More> provides a set of convenience functions
+that are wrappers around C<Carp::Assert>.
+
+L<Sub::Assert> provides support for subroutine pre- and post-conditions.
+The documentation says it's slow.
+
+L<PerlX::Assert> provides compile-time assertions, which are usually
+optimised away at compile time. Currently part of the L<Moops>
+distribution, but may get its own distribution sometime in 2014.
+
+L<Devel::Assert> also provides an C<assert> function, for Perl >= 5.8.1.
+
+L<assertions> provides an assertion mechanism for Perl >= 5.9.0.
 
 =head1 COPYRIGHT
 
