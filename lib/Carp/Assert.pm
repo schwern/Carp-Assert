@@ -548,6 +548,10 @@ L<Devel::Assert> also provides an C<assert> function, for Perl >= 5.8.1.
 
 L<assertions> provides an assertion mechanism for Perl >= 5.9.0.
 
+=head1 REPOSITORY
+
+L<https://github.com/schwern/Carp-Assert>
+
 =head1 COPYRIGHT
 
 Copyright 2001-2007 by Michael G Schwern E<lt>schwern@pobox.comE<gt>.

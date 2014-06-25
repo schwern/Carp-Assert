@@ -25,6 +25,16 @@ WriteMakefile(
         : ()
     ),
 
+    ($mm_ver <= 6.45 ? () : (META_MERGE => {
+        'meta-spec' => { version => 2 },
+        resources => {
+            repository  => {
+                type => 'git',
+                web  => 'https://github.com/schwern/Carp-Assert',
+                url  => 'git://github.com/schwern/Carp-Assert.git',
+            },
+        },
+
 );
 
 {
