@@ -1,8 +1,8 @@
 package Carp::Assert;
 
-require 5.004;
-
+require 5.006;
 use strict qw(subs vars);
+use warnings;
 use Exporter;
 
 use vars qw(@ISA $VERSION %EXPORT_TAGS);

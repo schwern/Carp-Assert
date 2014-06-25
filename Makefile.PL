@@ -1,5 +1,11 @@
 use ExtUtils::MakeMaker;
 
+my $mm_ver = $ExtUtils::MakeMaker::VERSION;
+if ($mm_ver =~ /_/) { # dev version
+    $mm_ver = eval $mm_ver;
+    die $@ if $@;
+}
+
 warn "Carp::Assert likes to have B::Deparse but can't find it.\n" unless 
   eval { require B::Deparse };
 
@@ -13,6 +19,12 @@ WriteMakefile(
                     SUFFIX   => '.gz',
                     DIST_DEFAULT => 'all tardist',
                    },
+
+    ($mm_ver >= 6.48
+        ? (MIN_PERL_VERSION => 5.006)
+        : ()
+    ),
+
 );
 
 {
