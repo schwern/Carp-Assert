@@ -2,6 +2,7 @@ Revision history for Perl module Carp::Assert
 
 0.21 2014-06-25
     - Fixed typos in pod. RT#95017 - thanks Daniel Lintott.
+    - Added links to wikipedia page on assert.h
     - Reformatted Changes as per CPAN::Changes::Spec
 
 0.20 2007-01-05 MSCHWERN

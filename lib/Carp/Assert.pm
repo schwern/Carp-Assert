@@ -130,7 +130,8 @@ delete @ENV{qw(PERL_NDEBUG NDEBUG)};
         - Dan Quayle
 
 Carp::Assert is intended for a purpose like the ANSI C library
-assert.h.  If you're already familiar with assert.h, then you can
+L<assert.h|http://en.wikipedia.org/wiki/Assert.h>.
+If you're already familiar with assert.h, then you can
 probably skip this and go straight to the FUNCTIONS section.
 
 Assertions are the explicit expressions of your assumptions about the
@@ -530,7 +531,8 @@ It would be nice if we could warn about missing C<if DEBUG>.
 
 =head1 SEE ALSO
 
-L<assertions> is a new module available in 5.9.0 which provides assertions which can be enabled/disabled at compile time for real, no C<if DEBUG> necessary.
+L<assert.h|http://en.wikipedia.org/wiki/Assert.h> - the wikipedia
+page about C<assert.h>.
 
 
 =head1 COPYRIGHT
