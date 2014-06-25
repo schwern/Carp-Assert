@@ -7,6 +7,8 @@ Revision history for Perl module Carp::Assert
     - Added github repo to dist metadata and pod
     - Add "use warnings" and bumped min perl version to 5.6.0
     - Added license type to dist metadata via Makefile.PL
+    - Add TEST_REQUIRES if your EU::MM supports it, otherwise
+      add them to PREREQ_PM
     - Reformatted Changes as per CPAN::Changes::Spec
 
 0.20 2007-01-05 MSCHWERN

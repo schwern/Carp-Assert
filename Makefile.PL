@@ -6,19 +6,36 @@ if ($mm_ver =~ /_/) { # dev version
     die $@ if $@;
 }
 
+my @REQUIRES = (
+    'strict'    => 0,
+    'warnings'  => 0,
+    'Exporter'  => 0,
+    'vars'      => 0,
+    'Carp'      => 0,
+);
+
+my @TEST_REQUIRES = (
+    'Test::More'    => 0.88,
+);
+
+push(@REQUIRES, @TEST_REQUIRES) if $mm_ver < 6.64;
+
 warn "Carp::Assert likes to have B::Deparse but can't find it.\n" unless 
   eval { require B::Deparse };
 
 WriteMakefile(
     NAME        => 'Carp::Assert',
     VERSION_FROM => 'lib/Carp/Assert.pm', # finds $VERSION
-    PREREQ_PM   => { Carp       => 0,
-                     Test::More => 0.40,
-                   },
+    PREREQ_PM   => { @REQUIRES },
     'dist'      => {COMPRESS => 'gzip -9',
                     SUFFIX   => '.gz',
                     DIST_DEFAULT => 'all tardist',
                    },
+
+    ($mm_ver >= 6.64
+        ? (TEST_REQUIRES => { @TEST_REQUIRES })
+        : ()
+    ),
 
     ($mm_ver >= 6.31 ? (LICENSE => 'perl') : ()),
 
