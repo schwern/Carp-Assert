@@ -7,3 +7,5 @@ lib/Carp/Assert.pm
 t/10enabled.t
 t/20disabled.t
 t/embedded-Carp-Assert.t
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)

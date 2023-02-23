@@ -183,11 +183,11 @@ way, the assert() will give you a clue as to where the problem lies,
 rather than 50 lines down at when you wonder why your program isn't
 printing anything.
 
-Since assertions are designed for debugging and will remove themselves
+Since assertions are designed for debugging and will remove themelves
 from production code, your assertions should be carefully crafted so
 as to not have any side-effects, change any variables, or otherwise
 have any effect on your program.  Here is an example of a bad
-assertion:
+assertation:
 
     assert($error = 1 if $king ne 'Henry');  # Bad!
 
